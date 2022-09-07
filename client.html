@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      #content {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #24153f;
+      }
+
+      #screen {
+        margin: auto;
+        border: 10px solid #1a1329;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        image-rendering: -moz-crisp-edges;
+        width: 400px;
+        height: 400px;
+        background-color: #24153f;
+        box-shadow: 0 0 24px rgba(255, 0, 162, 0.816);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <canvas id="screen" width="10" height="10"></canvas>
+    </div>
+
+    <script type="module">
+      import createGame from "./game.js";
+      import createKeyboardListener from "./keyboardListener.js";
+      import renderScreen from "./renderScreen.js";
+
+      const currentPlayer = "player1";
+
+      const game = createGame();
+      const keyboardListener = createKeyboardListener(document);
+      keyboardListener.subscribe(game.movePlayer);
+
+      const screen = document.getElementById("screen");
+      renderScreen(screen, game, requestAnimationFrame);
+
+      game.addPlayer({ playerId: "player1", playerX: 0, playerY: 0 });
+      game.addFruit({ fruitId: "fruit1", fruitX: 3, fruitY: 3 });
+    </script>
+  </body>
+</html>
