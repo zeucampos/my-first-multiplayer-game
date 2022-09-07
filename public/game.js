@@ -8,10 +8,20 @@ export default function createGame() {
     },
   };
 
+  function setState(newState) {
+    Object.assign(state, newState);
+  }
+
   function addPlayer(command) {
     const playerId = command.playerId;
-    const playerX = command.playerX;
-    const playerY = command.playerY;
+    const playerX =
+      "playerX" in command
+        ? command.playerX
+        : Math.floor(Math.random() * state.screen.width);
+    const playerY =
+      "playerY" in command
+        ? command.playerY
+        : Math.floor(Math.random() * state.screen.height);
 
     state.players[playerId] = {
       x: playerX,
@@ -55,6 +65,7 @@ export default function createGame() {
   }
 
   function movePlayer(command) {
+    console.log(`moving ${command.playerId}`);
     const acceptedMoves = {
       ArrowUp(player) {
         if (player.y - 1 >= 0) {
@@ -96,6 +107,7 @@ export default function createGame() {
   }
 
   return {
+    setState,
     addPlayer,
     removePlayer,
     addFruit,

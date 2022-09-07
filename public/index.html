@@ -18,21 +18,22 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #24153f;
+        background-color: #ddf8e8;
       }
 
       #screen {
         margin: auto;
-        border: 10px solid #1a1329;
+        /* border: 10px solid #1a1329; */
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         image-rendering: -moz-crisp-edges;
         width: 400px;
         height: 400px;
-        background-color: #24153f;
-        box-shadow: 0 0 24px rgba(255, 0, 162, 0.816);
+        background-color: #cdd5d1;
       }
     </style>
+
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
     <div id="content">
@@ -54,7 +55,21 @@
       renderScreen(screen, game, requestAnimationFrame);
 
       game.addPlayer({ playerId: "player1", playerX: 0, playerY: 0 });
+      game.addPlayer({ playerId: "player2", playerX: 4, playerY: 4 });
+
       game.addFruit({ fruitId: "fruit1", fruitX: 3, fruitY: 3 });
+
+      const socket = io();
+
+      socket.on("connect", () => {
+        const playerId = socket.id;
+        console.log(`player ${playerId} connected!`);
+      });
+
+      socket.on("setup", (state) => {
+        console.log(state);
+        game.setState(state);
+      });
     </script>
   </body>
 </html>
