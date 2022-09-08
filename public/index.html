@@ -45,30 +45,50 @@
       import createKeyboardListener from "./keyboardListener.js";
       import renderScreen from "./renderScreen.js";
 
-      const currentPlayer = "player1";
-
       const game = createGame();
       const keyboardListener = createKeyboardListener(document);
-      keyboardListener.subscribe(game.movePlayer);
-
-      const screen = document.getElementById("screen");
-      renderScreen(screen, game, requestAnimationFrame);
-
-      game.addPlayer({ playerId: "player1", playerX: 0, playerY: 0 });
-      game.addPlayer({ playerId: "player2", playerX: 4, playerY: 4 });
-
-      game.addFruit({ fruitId: "fruit1", fruitX: 3, fruitY: 3 });
 
       const socket = io();
 
       socket.on("connect", () => {
         const playerId = socket.id;
-        console.log(`player ${playerId} connected!`);
+
+        const screen = document.getElementById("screen");
+        renderScreen(screen, game, requestAnimationFrame, playerId);
       });
 
       socket.on("setup", (state) => {
-        console.log(state);
+        const playerId = socket.id;
         game.setState(state);
+
+        keyboardListener.registerPlayer(playerId);
+        keyboardListener.subscribe(game.movePlayer);
+        keyboardListener.subscribe((command) => {
+          socket.emit("move-player", command);
+        });
+      });
+
+      socket.on("move-player", (command) => {
+        const playerId = socket.id;
+        if (command.playerId !== playerId) {
+          game.movePlayer(command);
+        }
+      });
+
+      socket.on("add-fruit", (command) => {
+        game.addFruit(command);
+      });
+
+      socket.on("remove-fruit", (command) => {
+        game.removeFruit(command);
+      });
+
+      socket.on("add-player", (command) => {
+        game.addPlayer(command);
+      });
+
+      socket.on("remove-player", (command) => {
+        game.removePlayer(command);
       });
     </script>
   </body>

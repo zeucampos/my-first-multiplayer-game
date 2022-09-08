@@ -10,6 +10,11 @@ const sockets = new Server(server);
 app.use(express.static("public"));
 
 const game = createGame();
+game.start();
+game.subscribe((command) => {
+  console.log(`> Emitting ${command.type}`);
+  sockets.emit(command.type, command);
+});
 
 sockets.on("connection", (socket) => {
   const playerId = socket.id;
@@ -17,6 +22,21 @@ sockets.on("connection", (socket) => {
   game.addPlayer({ playerId });
 
   socket.emit("setup", game.state);
+
+  socket.on("move-player", (command) => {
+    command.playerId = playerId;
+    command.type = "move-player";
+
+    game.movePlayer(command);
+  });
+
+  socket.on("add-fruit", (command) => {
+    game.addFruit(command);
+  });
+
+  socket.on("remove-fruit", (command) => {
+    game.removeFruit(command);
+  });
 
   socket.on("disconnect", () => {
     game.removePlayer({ playerId });
